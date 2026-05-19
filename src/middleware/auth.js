@@ -36,7 +36,7 @@ const authenticate = (req, res, next) => {
     // Attach user info to headers so downstream services can read it
     req.headers['x-user-id']   = decoded.userId;
     req.headers['x-user-role'] = decoded.role;
-    req.headers['x-user-email']= decoded.email;
+    req.headers['x-user-email'] = decoded.email;
     next();
   } catch (err) {
     const message =
