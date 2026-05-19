@@ -1,18 +1,17 @@
 const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
+const { fixRequestBody } = require('http-proxy-middleware');
 const { validate }    = require('../middleware/validator');
 const { authLimiter } = require('../middleware/rateLimiter');
 const config          = require('../config/config');
 
 const router = express.Router();
 
-console.log(`✅ user service: ${config.services.user}`);
-
 const userProxy = createProxyMiddleware({
   target:       config.services.user,
   changeOrigin: true,
-  pathRewrite:  { '^/api/users': '/api/users' },
   on: {
+    proxyReq: fixRequestBody,
     error: (err, req, res) => {
       res.status(503).json({
         status:  503,

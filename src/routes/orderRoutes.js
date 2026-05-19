@@ -1,5 +1,6 @@
 const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
+const { fixRequestBody } = require('http-proxy-middleware');
 const { validate } = require('../middleware/validator');
 const config       = require('../config/config');
 
@@ -9,6 +10,7 @@ const orderProxy = createProxyMiddleware({
   target:       config.services.order,
   changeOrigin: true,
   on: {
+    proxyReq: fixRequestBody,
     error: (err, req, res) => {
       res.status(503).json({
         status:  503,
