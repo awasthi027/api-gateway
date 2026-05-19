@@ -11,6 +11,10 @@ const orderRoutes                      = require('./routes/orderRoutes');
 
 const app = express();
 
+// ─── Trust Railway / cloud reverse proxy ──────────────────────────────────
+// Required so express-rate-limit can read X-Forwarded-For correctly
+app.set('trust proxy', 1);
+
 // ─── Security & Parsing ────────────────────────────────────────────────────
 app.use(helmet());
 app.use(cors());
