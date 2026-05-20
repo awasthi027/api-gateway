@@ -13,7 +13,6 @@ const config = require("../config/config");
 async function forwardRequest(serviceUrl, path, req, res) {
   try {
     const url = `${serviceUrl}${path}`;
-    console.log(`Final Url Request    → ${url}`);
     // Forward safe headers only (drop hop-by-hop headers)
     const headers = {};
     if (req.headers['content-type'])  headers['content-type']  = req.headers['content-type'];

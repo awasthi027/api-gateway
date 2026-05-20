@@ -30,20 +30,27 @@ const authenticate = (req, res, next) => {
   }
 
   const token = authHeader.split(' ')[1];
-
+// Same Base64 secret used in your Java JwtService
+  const base64Secret = config.jwt.secret
+  const secretBuffer = Buffer.from(base64Secret, 'base64');
+// ── Verify & extract ─────────────────────────────────────────────────────
   try {
-    const decoded = jwt.verify(token, config.jwt.secret);
+    const decoded = jwt.verify(token, secretBuffer, {
+      algorithms: ['HS256'],
+      issuer: 'user-service',
+      audience: 'api-gateway'
+    });
     // Attach user info to headers so downstream services can read it
     req.headers['x-user-id']   = decoded.userId;
     req.headers['x-user-role'] = decoded.role;
     req.headers['x-user-email'] = decoded.email;
     next();
   } catch (err) {
+    console.log(`Error Info:   → ${err}`);
     const message =
       err.name === 'TokenExpiredError'
         ? 'Token has expired. Please log in again.'
         : 'Invalid token.';
-
     return res.status(401).json({ status: 401, error: 'Unauthorized', message });
   }
 };

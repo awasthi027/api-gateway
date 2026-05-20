@@ -2,11 +2,19 @@ const jwt     = require('jsonwebtoken');
 const request = require('supertest');
 const app     = require('../app');
 
-const SECRET    = process.env.JWT_SECRET || 'fallback_secret';
+const base64Secret    = process.env.JWT_SECRET || 'fallback_secret';
+// Same Base64 secret used in your Java JwtService
+const secretBuffer = Buffer.from(base64Secret, 'base64');
+// ── Sign ─────────────────────────────────────────────────────────────────
 const validToken = jwt.sign(
-  { userId: '123', role: 'user', email: 'test@test.com' },
-  SECRET,
-  { expiresIn: '1h' }
+    { userId: '123', role: 'user', email: 'test@test.com' },   // payload
+    secretBuffer,          // decoded key bytes — MUST match Java
+    {
+      algorithm: 'HS256',
+      expiresIn: '15m',
+      issuer: 'user-service',
+      audience: 'api-gateway'
+    }
 );
 
 describe('Auth Middleware', () => {
@@ -31,9 +39,14 @@ describe('Auth Middleware', () => {
 
   test('Protected route should return 401 with expired token', async () => {
     const expiredToken = jwt.sign(
-      { userId: '123', role: 'user' },
-      SECRET,
-      { expiresIn: '-1s' }
+        { userId: '123', role: 'user', email: 'test@test.com' },   // payload
+        secretBuffer,          // decoded key bytes — MUST match Java
+        {
+          algorithm: 'HS256',
+          expiresIn: '-1s',
+          issuer: 'user-service',
+          audience: 'api-gateway'
+        }
     );
     const res = await request(app)
       .get('/api/orders')
