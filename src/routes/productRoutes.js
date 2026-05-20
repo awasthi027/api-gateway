@@ -1,33 +1,27 @@
 const express = require('express');
-const { createProxyMiddleware } = require('http-proxy-middleware');
-const { fixRequestBody } = require('http-proxy-middleware');
 const { validate } = require('../middleware/validator');
 const config       = require('../config/config');
+const { forwardRequest } = require('../utils/forwardRequest');
 
 const router = express.Router();
 
-const productProxy = createProxyMiddleware({
-  target:       config.services.product,
-  changeOrigin: true,
-  on: {
-    proxyReq: fixRequestBody,
-    error: (err, req, res) => {
-      res.status(503).json({
-        status:  503,
-        error:   'Service Unavailable',
-        message: 'Product Service is currently unavailable. Please try again later.',
-      });
-    },
-  },
-});
+// ─── Routes ───────────────────────────────────────────────────────────────
 
 // Public
-router.get('/',    productProxy);
-router.get('/:id', productProxy);
+router.get('/', (req, res) =>
+  forwardRequest(config.services.product, '/api/products', req, res));
 
-// Protected (auth applied globally)
-router.post('/',      validate('createProduct'), productProxy);
-router.put('/:id',    productProxy);
-router.delete('/:id', productProxy);
+router.get('/:id', (req, res) =>
+  forwardRequest(config.services.product, `/api/products/${req.params.id}`, req, res));
+
+// Protected (auth applied globally in app.js)
+router.post('/', validate('createProduct'), (req, res) =>
+  forwardRequest(config.services.product, '/api/products', req, res));
+
+router.put('/:id', (req, res) =>
+  forwardRequest(config.services.product, `/api/products/${req.params.id}`, req, res));
+
+router.delete('/:id', (req, res) =>
+  forwardRequest(config.services.product, `/api/products/${req.params.id}`, req, res));
 
 module.exports = router;

@@ -1,30 +1,23 @@
 const express = require('express');
-const { createProxyMiddleware } = require('http-proxy-middleware');
-const { fixRequestBody } = require('http-proxy-middleware');
 const { validate } = require('../middleware/validator');
 const config       = require('../config/config');
+const { forwardRequest } = require('../utils/forwardRequest');
 
 const router = express.Router();
 
-const orderProxy = createProxyMiddleware({
-  target:       config.services.order,
-  changeOrigin: true,
-  on: {
-    proxyReq: fixRequestBody,
-    error: (err, req, res) => {
-      res.status(503).json({
-        status:  503,
-        error:   'Service Unavailable',
-        message: 'Order Service is currently unavailable. Please try again later.',
-      });
-    },
-  },
-});
+// ─── Routes ───────────────────────────────────────────────────────────────
 
-// All order routes are protected
-router.post('/',    validate('createOrder'), orderProxy);
-router.get('/',     orderProxy);
-router.get('/:id',  orderProxy);
-router.patch('/:id/status', orderProxy);
+// All order routes are protected (auth applied globally in app.js)
+router.post('/', validate('createOrder'), (req, res) =>
+  forwardRequest(config.services.order, '/api/orders', req, res));
+
+router.get('/', (req, res) =>
+  forwardRequest(config.services.order, '/api/orders', req, res));
+
+router.get('/:id', (req, res) =>
+  forwardRequest(config.services.order, `/api/orders/${req.params.id}`, req, res));
+
+router.patch('/:id/status', (req, res) =>
+  forwardRequest(config.services.order, `/api/orders/${req.params.id}/status`, req, res));
 
 module.exports = router;
