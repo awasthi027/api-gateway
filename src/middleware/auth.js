@@ -37,8 +37,8 @@ const authenticate = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, secretBuffer, {
       algorithms: ['HS256'],
-      issuer: 'user-service',
-      audience: 'api-gateway'
+      issuer: config.issuer,
+      audience: config.audience
     });
     // Attach user info to headers so downstream services can read it
     req.headers['x-user-id']   = decoded.userId;
@@ -54,5 +54,4 @@ const authenticate = (req, res, next) => {
     return res.status(401).json({ status: 401, error: 'Unauthorized', message });
   }
 };
-
 module.exports = { authenticate, isPublicRoute };

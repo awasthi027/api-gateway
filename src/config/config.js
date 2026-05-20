@@ -3,6 +3,8 @@ require('dotenv').config();
 module.exports = {
   port: process.env.PORT || 3000,
   nodeEnv: process.env.NODE_ENV || 'development',
+  issuer: process.env.ISSUER || 'user-service',
+  audience: process.env.AUDIENCE || 'api-gateway',
   jwt: {
     secret: process.env.JWT_SECRET || 'fallback_secret',
   },

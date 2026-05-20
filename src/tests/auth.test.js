@@ -3,6 +3,8 @@ const request = require('supertest');
 const app     = require('../app');
 
 const base64Secret    = process.env.JWT_SECRET || 'fallback_secret';
+const issuer    = process.env.ISSUER || 'user-service';
+const audience  = process.env.AUDIENCE || 'api-gateway';
 // Same Base64 secret used in your Java JwtService
 const secretBuffer = Buffer.from(base64Secret, 'base64');
 // ── Sign ─────────────────────────────────────────────────────────────────

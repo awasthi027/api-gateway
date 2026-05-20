@@ -10,9 +10,12 @@ const config = require("../config/config");
  * @param {object}   req         - Express request object
  * @param {object}   res         - Express response object
  */
+
 async function forwardRequest(serviceUrl, path, req, res) {
   try {
+
     const url = `${serviceUrl}${path}`;
+
     // Forward safe headers only (drop hop-by-hop headers)
     const headers = {};
     if (req.headers['content-type'])  headers['content-type']  = req.headers['content-type'];
