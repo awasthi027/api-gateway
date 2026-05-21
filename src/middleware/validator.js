@@ -14,6 +14,10 @@ const schemas = {
     password: Joi.string().required(),
   }),
 
+  refresh: Joi.object({
+    refreshToken: Joi.string().trim().required(),
+  }),
+
   // Product Service
   createProduct: Joi.object({
     name:        Joi.string().min(2).max(100).required(),
@@ -25,11 +29,15 @@ const schemas = {
 
   // Order Service
   createOrder: Joi.object({
-    items: Joi.array()
+    customerName: Joi.string().min(2).max(100).required(),
+    address:      Joi.string().min(5).max(200).required(),
+    paymentType:  Joi.string().valid('UPI', 'CARD', 'CASH', 'NET_BANKING').required(),
+    products: Joi.array()
       .items(
         Joi.object({
-          productId: Joi.string().required(),
-          quantity:  Joi.number().integer().min(1).required(),
+          productId:   Joi.string().uuid().required(),
+          productName: Joi.string().min(1).max(100).required(),
+          price:       Joi.number().positive().required(),
         })
       )
       .min(1)

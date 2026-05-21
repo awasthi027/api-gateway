@@ -5,6 +5,7 @@ const config = require('../config/config');
 const PUBLIC_ROUTES = [
   { path: '/api/users/register', method: 'POST' },
   { path: '/api/users/login',    method: 'POST' },
+  { path: '/api/users/refresh',  method: 'POST' },
   { path: '/api/products',       method: 'GET'  },
   { path: '/health',             method: 'GET'  },
 ];

@@ -11,6 +11,9 @@ const router = express.Router();
 router.get('/', (req, res) =>
   forwardRequest(config.services.product, '/api/products', req, res));
 
+router.get('/search', (req, res) =>
+  forwardRequest(config.services.product, '/api/products/search', req, res));
+
 router.get('/:id', (req, res) =>
   forwardRequest(config.services.product, `/api/products/${req.params.id}`, req, res));
 

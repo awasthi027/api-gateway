@@ -14,6 +14,9 @@ router.post('/register', authLimiter, validate('register'), (req, res) =>
 router.post('/login', authLimiter, validate('login'), (req, res) =>
   forwardRequest(config.services.user, '/api/users/login', req, res));
 
+router.post('/refresh', authLimiter, validate('refresh'), (req, res) =>
+  forwardRequest(config.services.user, '/api/users/refresh', req, res));
+
 router.post('/logout', authLimiter, validate('logout'), (req, res) =>
     forwardRequest(config.services.user, '/api/users/logout', req, res));
 
